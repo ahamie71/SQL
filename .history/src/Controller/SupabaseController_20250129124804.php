@@ -1,6 +1,6 @@
-<?php
 // src/Controller/SupabaseController.php
-namespace App\Controller;
+n
+amespace App\Controller;
 
 use App\Service\SupabaseService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

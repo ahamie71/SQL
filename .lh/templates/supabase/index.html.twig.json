@@ -1,0 +1,18 @@
+{
+    "sourceFile": "templates/supabase/index.html.twig",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1738151324766,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1738151324766,
+            "name": "Commit-0",
+            "content": "{% extends 'base.html.twig' %}\n\n{% block title %}Données de {{ table }}{% endblock %}\n\n{% block body %}\n    <h1>Données de la table : {{ table }}</h1>\n\n    {% if data is empty %}\n        <p>Aucune donnée trouvée.</p>\n    {% else %}\n        <table border=\"1\">\n            <thead>\n                <tr>\n                    {% for key in data[0] | keys %}\n                        <th>{{ key }}</th>\n                    {% endfor %}\n                </tr>\n            </thead>\n            <tbody>\n                {% for row in data %}\n                    <tr>\n                        {% for value in row %}\n                            <td>{{ value }}</td>\n                        {% endfor %}\n                    </tr>\n                {% endfor %}\n            </tbody>\n        </table>\n    {% endif %}\n{% endblock %}\n\n"
+        }
+    ]
+}

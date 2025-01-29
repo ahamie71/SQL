@@ -1,4 +1,3 @@
-<?php
 // src/Controller/SupabaseController.php
 namespace App\Controller;
 
@@ -22,4 +21,3 @@ class SupabaseController extends AbstractController
         ]);
     }
 }
-

@@ -1,4 +1,3 @@
-<?php
 // src/Controller/SupabaseController.php
 namespace App\Controller;
 

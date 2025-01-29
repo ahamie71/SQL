@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Données de {{ table }}{% endblock %}
+
+{% block body %}
+    <h1>Données de la table : {{ table }}</h1>
+
+    {% if data is empty %}
+        <p>Aucune donnée trouvée.</p>
+    {% else %}
+        <table border="1">
+            <thead>
+                <tr>
+                    {% for key in data[0] | keys %}
+                        <th>{{ key }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                    <tr>
+                        {% for value in row %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
+
