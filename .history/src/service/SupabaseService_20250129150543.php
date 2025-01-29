@@ -1,5 +1,5 @@
 <?php
-
+// src/Service/SupabaseService.php
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -19,26 +19,17 @@ class SupabaseService
 
     public function fetchData(string $table, array $filters = [])
     {
-        // Construire l'URL de la requête vers Supabase
+        // Construire l'URL de la requête vers Supabase avec les filtres
         $url = "{$this->url}/rest/v1/{$table}";
 
-        // Vérifier s'il y a des filtres à appliquer
+        // Si des filtres sont fournis, les ajouter à l'URL sous forme de query params
         if (!empty($filters)) {
-            $queryParams = [];
-
-            foreach ($filters as $key => $value) {
-                if (!empty($value)) { // Évite d'ajouter des filtres vides
-                    $queryParams[] = "{$key}=eq.{$value}";
-                }
-            }
-
-            // Ajouter les filtres à l'URL
-            if (!empty($queryParams)) {
-                $url .= '?' . implode('&', $queryParams);
-            }
+            // Utilisation de http_build_query pour formater les paramètres de manière correcte
+            $queryString = http_build_query($filters);
+            $url .= "?{$queryString}";
         }
 
-        // Envoi de la requête
+        // Envoi de la requête à Supabase
         $response = $this->client->request('GET', $url, [
             'headers' => [
                 'apikey' => $this->key,
