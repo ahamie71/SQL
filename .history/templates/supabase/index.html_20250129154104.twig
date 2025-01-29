@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Données de la table : {{ table }}</h1>
+
+    {# Formulaire de filtrage #}
+    <form method="GET" action="{{ path('fetch_supabase', {'table': table}) }}">
+        <label for="id">ID :</label>
+        <input type="number" name="id" value="{{ filters['id'] ?? '' }}">
+
+        <label for="year">Année :</label>
+        <input type="number" name="year" value="{{ filters['year'] ?? '' }}">
+
+        <label for="month">Mois :</label>
+        <input type="number" name="month" value="{{ filters['month'] ?? '' }}">
+
+        <label for="day">Jour :</label>
+        <input type="number" name="day" value="{{ filters['day'] ?? '' }}">
+
+        <label for="dep_time">Heure de départ :</label>
+        <input type="number" name="dep_time" value="{{ filters['dep_time'] ?? '' }}">
+
+        <label for="carrier">Compagnie aérienne :</label>
+        <input type="text" name="carrier" value="{{ filters['carrier'] ?? '' }}">
+
+        <label for="flight">Numéro de vol :</label>
+        <input type="text" name="flight" value="{{ filters['flight'] ?? '' }}">
+
+        <label for="origin">Aéroport d'origine :</label>
+        <input type="text" name="origin" value="{{ filters['origin'] ?? '' }}">
+
+        <label for="dest">Aéroport de destination :</label>
+        <input type="text" name="dest" value="{{ filters['dest'] ?? '' }}">
+
+        <label for="distance">Distance (km) :</label>
+        <input type="number" name="distance" value="{{ filters['distance'] ?? '' }}">
+
+        <button type="submit">Filtrer</button>
+    </form>
+
+    {% if data is not empty %}
+        <table>
+            <thead>
+                <tr>
+                    {% for column, value in data[0] %}
+                        <th>{{ column }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                    <tr>
+                        {% for value in row %}
+                            <td>{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Aucune donnée trouvée.</p>
+    {% endif %}
+{% endblock %}
