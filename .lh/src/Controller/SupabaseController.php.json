@@ -1,0 +1,34 @@
+{
+    "sourceFile": "src/Controller/SupabaseController.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 4,
+            "patches": [
+                {
+                    "date": 1738148823826,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1738149009816,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,19 +0,0 @@\n-<?php\n-\n-namespace App\\Controller;\n-\n-use App\\Service\\SupabaseService;\n-use Symfony\\Bundle\\FrameworkBundle\\Controller\\AbstractController;\n-use Symfony\\Component\\HttpFoundation\\JsonResponse;\n-use Symfony\\Component\\Routing\\Annotation\\Route;\n-\n-class SupabaseController extends AbstractController\n-{\n-    #[Route('/supabase/{table}', name: 'fetch_supabase')]\n-    public function index(SupabaseService $supabaseService, string $table): JsonResponse\n-    {\n-        $data = $supabaseService->fetchData($table);\n-        return $this->json($data);\n-    }\n-}\n-\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1738149036413,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,32 @@\n+<?php\n \n+namespace App\\Service;\n+\n+use Symfony\\Contracts\\HttpClient\\HttpClientInterface;\n+\n+class SupabaseService\n+{\n+    private string $supabaseUrl;\n+    private string $supabaseKey;\n+    private HttpClientInterface $httpClient;\n+\n+    public function __construct(HttpClientInterface $httpClient, string $supabaseUrl, string $supabaseKey)\n+    {\n+        $this->httpClient = $httpClient;\n+        $this->supabaseUrl = $supabaseUrl;\n+        $this->supabaseKey = $supabaseKey;\n+    }\n+\n+    public function fetchData(string $table)\n+    {\n+        $response = $this->httpClient->request('GET', \"{$this->supabaseUrl}/rest/v1/{$table}\", [\n+            'headers' => [\n+                'apikey' => $this->supabaseKey,\n+                'Authorization' => \"Bearer {$this->supabaseKey}\",\n+                'Content-Type' => 'application/json',\n+            ],\n+        ]);\n+\n+        return $response->toArray();\n+    }\n+}\n"
+                },
+                {
+                    "date": 1738150014472,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,32 +1,20 @@\n-<?php\n+// src/Controller/SupabaseController.php\n+namespace App\\Controller;\n \n-namespace App\\Service;\n+use App\\Service\\SupabaseService;\n+use Symfony\\Bundle\\FrameworkBundle\\Controller\\AbstractController;\n+use Symfony\\Component\\HttpFoundation\\JsonResponse;\n+use Symfony\\Component\\Routing\\Annotation\\Route;\n \n-use Symfony\\Contracts\\HttpClient\\HttpClientInterface;\n-\n-class SupabaseService\n+class SupabaseController extends AbstractController\n {\n-    private string $supabaseUrl;\n-    private string $supabaseKey;\n-    private HttpClientInterface $httpClient;\n-\n-    public function __construct(HttpClientInterface $httpClient, string $supabaseUrl, string $supabaseKey)\n+    #[Route('/supabase/{table}', name: 'fetch_supabase')]\n+    public function index(SupabaseService $supabaseService, string $table): JsonResponse\n     {\n-        $this->httpClient = $httpClient;\n-        $this->supabaseUrl = $supabaseUrl;\n-        $this->supabaseKey = $supabaseKey;\n-    }\n+        // Appelle le service pour récupérer les données de la table\n+        $data = $supabaseService->fetchData($table);\n \n-    public function fetchData(string $table)\n-    {\n-        $response = $this->httpClient->request('GET', \"{$this->supabaseUrl}/rest/v1/{$table}\", [\n-            'headers' => [\n-                'apikey' => $this->supabaseKey,\n-                'Authorization' => \"Bearer {$this->supabaseKey}\",\n-                'Content-Type' => 'application/json',\n-            ],\n-        ]);\n-\n-        return $response->toArray();\n+        // Retourne les données en JSON\n+        return $this->json($data);\n     }\n }\n"
+                },
+                {
+                    "date": 1738150020150,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,7 @@\n+<?php\n+\n+\n // src/Controller/SupabaseController.php\n namespace App\\Controller;\n \n use App\\Service\\SupabaseService;\n"
+                }
+            ],
+            "date": 1738148823826,
+            "name": "Commit-0",
+            "content": "<?php\n\nnamespace App\\Controller;\n\nuse App\\Service\\SupabaseService;\nuse Symfony\\Bundle\\FrameworkBundle\\Controller\\AbstractController;\nuse Symfony\\Component\\HttpFoundation\\JsonResponse;\nuse Symfony\\Component\\Routing\\Annotation\\Route;\n\nclass SupabaseController extends AbstractController\n{\n    #[Route('/supabase/{table}', name: 'fetch_supabase')]\n    public function index(SupabaseService $supabaseService, string $table): JsonResponse\n    {\n        $data = $supabaseService->fetchData($table);\n        return $this->json($data);\n    }\n}\n\n"
+        }
+    ]
+}

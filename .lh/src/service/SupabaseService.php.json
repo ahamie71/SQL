@@ -1,0 +1,38 @@
+{
+    "sourceFile": "src/service/SupabaseService.php",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 5,
+            "patches": [
+                {
+                    "date": 1738148473214,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1738149861290,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,32 +1,32 @@\n-<?php\n-\n+// src/Service/SupabaseService.php\n namespace App\\Service;\n \n use Symfony\\Contracts\\HttpClient\\HttpClientInterface;\n \n class SupabaseService\n {\n-    private string $supabaseUrl;\n-    private string $supabaseKey;\n-    private HttpClientInterface $httpClient;\n+    private $client;\n+    private $url;\n+    private $key;\n \n-    public function __construct(HttpClientInterface $httpClient, string $supabaseUrl, string $supabaseKey)\n+    public function __construct(HttpClientInterface $client)\n     {\n-        $this->httpClient = $httpClient;\n-        $this->supabaseUrl = $supabaseUrl;\n-        $this->supabaseKey = $supabaseKey;\n+        $this->client = $client;\n+        $this->url = $_ENV['SUPABASE_URL']; // URL de Supabase\n+        $this->key = $_ENV['SUPABASE_KEY']; // Clé API de Supabase\n     }\n \n     public function fetchData(string $table)\n     {\n-        $response = $this->httpClient->request('GET', \"{$this->supabaseUrl}/rest/v1/{$table}\", [\n+        $response = $this->client->request('GET', \"{$this->url}/rest/v1/{$table}\", [\n             'headers' => [\n-                'apikey' => $this->supabaseKey,\n-                'Authorization' => \"Bearer {$this->supabaseKey}\",\n+                'apikey' => $this->key,\n+                'Authorization' => 'Bearer ' . $this->key,\n                 'Content-Type' => 'application/json',\n             ],\n         ]);\n \n+        // Retourne les données de la table sous forme de tableau\n         return $response->toArray();\n     }\n }\n"
+                },
+                {
+                    "date": 1738149873232,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,7 @@\n-// src/Service/SupabaseService.php\n+<?php\n+\n+/ src/Service/SupabaseService.php\n namespace App\\Service;\n \n use Symfony\\Contracts\\HttpClient\\HttpClientInterface;\n \n"
+                },
+                {
+                    "date": 1738149878947,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n <?php\n \n-/ src/Service/SupabaseService.php\n+\n namespace App\\Service;\n \n use Symfony\\Contracts\\HttpClient\\HttpClientInterface;\n \n"
+                },
+                {
+                    "date": 1738149890935,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,6 @@\n <?php\n \n-\n namespace App\\Service;\n \n use Symfony\\Contracts\\HttpClient\\HttpClientInterface;\n \n@@ -13,9 +12,9 @@\n \n     public function __construct(HttpClientInterface $client)\n     {\n         $this->client = $client;\n-        $this->url = $_ENV['SUPABASE_URL']; // URL de Supabase\n+        $this->url = $_ENV['']; // URL de Supabase\n         $this->key = $_ENV['SUPABASE_KEY']; // Clé API de Supabase\n     }\n \n     public function fetchData(string $table)\n"
+                },
+                {
+                    "date": 1738150131588,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n \n     public function __construct(HttpClientInterface $client)\n     {\n         $this->client = $client;\n-        $this->url = $_ENV['']; // URL de Supabase\n+        $this->url = $_ENV['SUPABASE_URL']; // URL de Supabase\n         $this->key = $_ENV['SUPABASE_KEY']; // Clé API de Supabase\n     }\n \n     public function fetchData(string $table)\n"
+                }
+            ],
+            "date": 1738148473214,
+            "name": "Commit-0",
+            "content": "<?php\n\nnamespace App\\Service;\n\nuse Symfony\\Contracts\\HttpClient\\HttpClientInterface;\n\nclass SupabaseService\n{\n    private string $supabaseUrl;\n    private string $supabaseKey;\n    private HttpClientInterface $httpClient;\n\n    public function __construct(HttpClientInterface $httpClient, string $supabaseUrl, string $supabaseKey)\n    {\n        $this->httpClient = $httpClient;\n        $this->supabaseUrl = $supabaseUrl;\n        $this->supabaseKey = $supabaseKey;\n    }\n\n    public function fetchData(string $table)\n    {\n        $response = $this->httpClient->request('GET', \"{$this->supabaseUrl}/rest/v1/{$table}\", [\n            'headers' => [\n                'apikey' => $this->supabaseKey,\n                'Authorization' => \"Bearer {$this->supabaseKey}\",\n                'Content-Type' => 'application/json',\n            ],\n        ]);\n\n        return $response->toArray();\n    }\n}\n"
+        }
+    ]
+}
