@@ -3,11 +3,19 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1738151324766,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1738159576818,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,19 +1,15 @@\n {% extends 'base.html.twig' %}\n \n-{% block title %}Données de {{ table }}{% endblock %}\n-\n {% block body %}\n     <h1>Données de la table : {{ table }}</h1>\n \n-    {% if data is empty %}\n-        <p>Aucune donnée trouvée.</p>\n-    {% else %}\n-        <table border=\"1\">\n+    {% if data is not empty %}\n+        <table>\n             <thead>\n                 <tr>\n-                    {% for key in data[0] | keys %}\n-                        <th>{{ key }}</th>\n+                    {% for column, value in data[0] %}\n+                        <th>{{ column }}</th>\n                     {% endfor %}\n                 </tr>\n             </thead>\n             <tbody>\n@@ -25,7 +21,8 @@\n                     </tr>\n                 {% endfor %}\n             </tbody>\n         </table>\n+    {% else %}\n+        <p>Aucune donnée disponible pour cette table.</p>\n     {% endif %}\n {% endblock %}\n-\n"
+                },
+                {
+                    "date": 1738161191152,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,8 +2,43 @@\n \n {% block body %}\n     <h1>Données de la table : {{ table }}</h1>\n \n+    {# Formulaire de filtrage #}\n+    <form method=\"GET\" action=\"{{ path('fetch_supabase', {'table': table}) }}\">\n+        <label for=\"id\">ID :</label>\n+        <input type=\"number\" name=\"id\" value=\"{{ filters['id'] ?? '' }}\">\n+\n+        <label for=\"year\">Année :</label>\n+        <input type=\"number\" name=\"year\" value=\"{{ filters['year'] ?? '' }}\">\n+\n+        <label for=\"month\">Mois :</label>\n+        <input type=\"number\" name=\"month\" value=\"{{ filters['month'] ?? '' }}\">\n+\n+        <label for=\"day\">Jour :</label>\n+        <input type=\"number\" name=\"day\" value=\"{{ filters['day'] ?? '' }}\">\n+\n+        <label for=\"dep_time\">Heure de départ :</label>\n+        <input type=\"number\" name=\"dep_time\" value=\"{{ filters['dep_time'] ?? '' }}\">\n+\n+        <label for=\"carrier\">Compagnie aérienne :</label>\n+        <input type=\"text\" name=\"carrier\" value=\"{{ filters['carrier'] ?? '' }}\">\n+\n+        <label for=\"flight\">Numéro de vol :</label>\n+        <input type=\"text\" name=\"flight\" value=\"{{ filters['flight'] ?? '' }}\">\n+\n+        <label for=\"origin\">Aéroport d'origine :</label>\n+        <input type=\"text\" name=\"origin\" value=\"{{ filters['origin'] ?? '' }}\">\n+\n+        <label for=\"dest\">Aéroport de destination :</label>\n+        <input type=\"text\" name=\"dest\" value=\"{{ filters['dest'] ?? '' }}\">\n+\n+        <label for=\"distance\">Distance (km) :</label>\n+        <input type=\"number\" name=\"distance\" value=\"{{ filters['distance'] ?? '' }}\">\n+\n+        <button type=\"submit\">Filtrer</button>\n+    </form>\n+\n     {% if data is not empty %}\n         <table>\n             <thead>\n                 <tr>\n@@ -22,7 +57,7 @@\n                 {% endfor %}\n             </tbody>\n         </table>\n     {% else %}\n-        <p>Aucune donnée disponible pour cette table.</p>\n+        <p>Aucune donnée trouvée.</p>\n     {% endif %}\n {% endblock %}\n"
                 }
             ],
             "date": 1738151324766,

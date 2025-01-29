@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 7,
+            "activePatchIndex": 17,
             "patches": [
                 {
                     "date": 1738148823826,
@@ -36,6 +36,46 @@
                 {
                     "date": 1738151289677,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,8 @@\n+\n+<?php\n // src/Controller/SupabaseController.php\n-n\n-amespace App\\Controller;\n+namespace App\\Controller;\n \n use App\\Service\\SupabaseService;\n use Symfony\\Bundle\\FrameworkBundle\\Controller\\AbstractController;\n use Symfony\\Component\\HttpFoundation\\Response;\n"
+                },
+                {
+                    "date": 1738157646258,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,4 @@\n-\n <?php\n // src/Controller/SupabaseController.php\n namespace App\\Controller;\n \n@@ -21,6 +20,8 @@\n             'table' => $table,\n             'data' => $data,\n         ]);\n     }\n+\n+    \n }\n \n"
+                },
+                {
+                    "date": 1738157652015,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,7 +21,8 @@\n             'data' => $data,\n         ]);\n     }\n \n+    #[Route('/supabase/{table}/insert', name: 'insert_supabase')]\n     \n }\n \n"
+                },
+                {
+                    "date": 1738157672232,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,9 +20,20 @@\n             'table' => $table,\n             'data' => $data,\n         ]);\n     }\n+    #[Route('/supabase/insert/{table}', name: 'insert_supabase')]\n+    public function insertData(SupabaseService $supabaseService, string $table, Request $request): Response\n+    {\n+        // Exemple d'insertion, les données proviennent du corps de la requête\n+        $data = [\n+            'name' => $request->get('name'),\n+            'email' => $request->get('email'),\n+        ];\n \n-    #[Route('/supabase/{table}/insert', name: 'insert_supabase')]\n-    \n+        // Appel à la méthode d'insertion du service\n+        $result = $supabaseService->insertData($table, $data);\n+\n+        return $this->json($result); // Retourne la réponse en JSON\n+    }\n }\n \n"
+                },
+                {
+                    "date": 1738157775184,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,20 +20,7 @@\n             'table' => $table,\n             'data' => $data,\n         ]);\n     }\n-    #[Route('/supabase/insert/{table}', name: 'insert_supabase')]\n-    public function insertData(SupabaseService $supabaseService, string $table, Request $request): Response\n-    {\n-        // Exemple d'insertion, les données proviennent du corps de la requête\n-        $data = [\n-            'name' => $request->get('name'),\n-            'email' => $request->get('email'),\n-        ];\n-\n-        // Appel à la méthode d'insertion du service\n-        $result = $supabaseService->insertData($table, $data);\n-\n-        return $this->json($result); // Retourne la réponse en JSON\n-    }\n+   \n }\n \n"
+                },
+                {
+                    "date": 1738159082427,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,7 +20,7 @@\n             'table' => $table,\n             'data' => $data,\n         ]);\n     }\n-   \n+\n }\n \n"
+                },
+                {
+                    "date": 1738159499428,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,14 +8,17 @@\n use Symfony\\Component\\Routing\\Annotation\\Route;\n \n class SupabaseController extends AbstractController\n {\n-    #[Route('/supabase/{table}', name: 'fetch_supabase')]\n-    public function index(SupabaseService $supabaseService, string $table): Response\n+    [Route('/supabase/{table}', name: 'fetch_supabase')]\n+    public function index(SupabaseService $supabaseService, string $table, Request $request): Response\n     {\n-        // Récupère les données depuis Supabase\n-        $data = $supabaseService->fetchData($table);\n+        // Récupérer les critères de filtrage depuis l'URL (par exemple, ?field1=value1&field2=value2)\n+        $filters = $request->query->all();\n \n+        // Récupère les données de la table avec les filtres\n+        $data = $supabaseService->fetchData($table, $filters);\n+\n         // Affiche la page Twig avec les données\n         return $this->render('supabase/index.html.twig', [\n             'table' => $table,\n             'data' => $data,\n"
+                },
+                {
+                    "date": 1738159505007,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,17 +8,14 @@\n use Symfony\\Component\\Routing\\Annotation\\Route;\n \n class SupabaseController extends AbstractController\n {\n-    [Route('/supabase/{table}', name: 'fetch_supabase')]\n-    public function index(SupabaseService $supabaseService, string $table, Request $request): Response\n+    #[Route('/supabase/{table}', name: 'fetch_supabase')]\n+    public function index(SupabaseService $supabaseService, string $table): Response\n     {\n-        // Récupérer les critères de filtrage depuis l'URL (par exemple, ?field1=value1&field2=value2)\n-        $filters = $request->query->all();\n+        // Récupère les données depuis Supabase\n+        $data = $supabaseService->fetchData($table);\n \n-        // Récupère les données de la table avec les filtres\n-        $data = $supabaseService->fetchData($table, $filters);\n-\n         // Affiche la page Twig avec les données\n         return $this->render('supabase/index.html.twig', [\n             'table' => $table,\n             'data' => $data,\n"
+                },
+                {
+                    "date": 1738159522115,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,13 +9,16 @@\n \n class SupabaseController extends AbstractController\n {\n     #[Route('/supabase/{table}', name: 'fetch_supabase')]\n-    public function index(SupabaseService $supabaseService, string $table): Response\n+    public function index(SupabaseService $supabaseService, string $table, Request $request): Response\n     {\n-        // Récupère les données depuis Supabase\n-        $data = $supabaseService->fetchData($table);\n+        // Récupérer les critères de filtrage depuis l'URL (par exemple, ?field1=value1&field2=value2)\n+        $filters = $request->query->all();\n \n+        // Récupère les données de la table avec les filtres\n+        $data = $supabaseService->fetchData($table, $filters);\n+\n         // Affiche la page Twig avec les données\n         return $this->render('supabase/index.html.twig', [\n             'table' => $table,\n             'data' => $data,\n"
+                },
+                {
+                    "date": 1738159616024,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,8 +4,9 @@\n \n use App\\Service\\SupabaseService;\n use Symfony\\Bundle\\FrameworkBundle\\Controller\\AbstractController;\n use Symfony\\Component\\HttpFoundation\\Response;\n+use Symfony\\Component\\HttpFoundation\\Request;\n use Symfony\\Component\\Routing\\Annotation\\Route;\n \n class SupabaseController extends AbstractController\n {\n"
+                },
+                {
+                    "date": 1738161140685,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,28 +3,27 @@\n namespace App\\Controller;\n \n use App\\Service\\SupabaseService;\n use Symfony\\Bundle\\FrameworkBundle\\Controller\\AbstractController;\n+use Symfony\\Component\\HttpFoundation\\Request;\n use Symfony\\Component\\HttpFoundation\\Response;\n-use Symfony\\Component\\HttpFoundation\\Request;\n use Symfony\\Component\\Routing\\Annotation\\Route;\n \n class SupabaseController extends AbstractController\n {\n     #[Route('/supabase/{table}', name: 'fetch_supabase')]\n     public function index(SupabaseService $supabaseService, string $table, Request $request): Response\n     {\n-        // Récupérer les critères de filtrage depuis l'URL (par exemple, ?field1=value1&field2=value2)\n+        // Récupérer tous les filtres passés dans l'URL\n         $filters = $request->query->all();\n \n-        // Récupère les données de la table avec les filtres\n+        // Récupère les données filtrées de la table\n         $data = $supabaseService->fetchData($table, $filters);\n \n-        // Affiche la page Twig avec les données\n+        // Affiche la page Twig avec les données et les filtres actifs\n         return $this->render('supabase/index.html.twig', [\n             'table' => $table,\n             'data' => $data,\n+            'filters' => $filters, // Pour afficher les filtres en cours dans le formulaire\n         ]);\n     }\n-\n }\n-\n"
                 }
             ],
             "date": 1738148823826,

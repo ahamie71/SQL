@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 5,
+            "activePatchIndex": 10,
             "patches": [
                 {
                     "date": 1738148473214,
@@ -28,6 +28,26 @@
                 {
                     "date": 1738150131588,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n \n     public function __construct(HttpClientInterface $client)\n     {\n         $this->client = $client;\n-        $this->url = $_ENV['']; // URL de Supabase\n+        $this->url = $_ENV['SUPABASE_URL']; // URL de Supabase\n         $this->key = $_ENV['SUPABASE_KEY']; // Clé API de Supabase\n     }\n \n     public function fetchData(string $table)\n"
+                },
+                {
+                    "date": 1738157640980,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -29,5 +29,21 @@\n \n         // Retourne les données de la table sous forme de tableau\n         return $response->toArray();\n     }\n+\n+    public function insertData(string $table, array $data)\n+    {\n+        // Envoie la requête POST à Supabase pour insérer des données\n+        $response = $this->client->request('POST', \"{$this->url}/rest/v1/{$table}\", [\n+            'headers' => [\n+                'apikey' => $this->key,\n+                'Authorization' => 'Bearer ' . $this->key,\n+                'Content-Type' => 'application/json',\n+            ],\n+            'json' => $data, // Données à insérer\n+        ]);\n+\n+        // Retourne la réponse de Supabase\n+        return $response->toArray();\n+    }\n }\n"
+                },
+                {
+                    "date": 1738157791088,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -30,20 +30,6 @@\n         // Retourne les données de la table sous forme de tableau\n         return $response->toArray();\n     }\n \n-    public function insertData(string $table, array $data)\n-    {\n-        // Envoie la requête POST à Supabase pour insérer des données\n-        $response = $this->client->request('POST', \"{$this->url}/rest/v1/{$table}\", [\n-            'headers' => [\n-                'apikey' => $this->key,\n-                'Authorization' => 'Bearer ' . $this->key,\n-                'Content-Type' => 'application/json',\n-            ],\n-            'json' => $data, // Données à insérer\n-        ]);\n-\n-        // Retourne la réponse de Supabase\n-        return $response->toArray();\n-    }\n+   \n }\n"
+                },
+                {
+                    "date": 1738159543715,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n <?php\n-\n+// src/Service/SupabaseService.php\n namespace App\\Service;\n \n use Symfony\\Contracts\\HttpClient\\HttpClientInterface;\n \n@@ -16,20 +16,29 @@\n         $this->url = $_ENV['SUPABASE_URL']; // URL de Supabase\n         $this->key = $_ENV['SUPABASE_KEY']; // Clé API de Supabase\n     }\n \n-    public function fetchData(string $table)\n+    public function fetchData(string $table, array $filters = [])\n     {\n-        $response = $this->client->request('GET', \"{$this->url}/rest/v1/{$table}\", [\n+        // Construire l'URL de la requête vers Supabase avec les filtres\n+        $url = \"{$this->url}/rest/v1/{$table}\";\n+\n+        // Si des filtres sont fournis, les ajouter à l'URL sous forme de query params\n+        if (!empty($filters)) {\n+            // Utilisation de http_build_query pour formater les paramètres de manière correcte\n+            $queryString = http_build_query($filters);\n+            $url .= \"?{$queryString}\";\n+        }\n+\n+        // Envoi de la requête à Supabase\n+        $response = $this->client->request('GET', $url, [\n             'headers' => [\n                 'apikey' => $this->key,\n                 'Authorization' => 'Bearer ' . $this->key,\n                 'Content-Type' => 'application/json',\n             ],\n         ]);\n \n-        // Retourne les données de la table sous forme de tableau\n+        // Retourne les données sous forme de tableau\n         return $response->toArray();\n     }\n-\n-   \n }\n"
+                },
+                {
+                    "date": 1738161108905,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,4 @@\n-<?php\n // src/Service/SupabaseService.php\n namespace App\\Service;\n \n use Symfony\\Contracts\\HttpClient\\HttpClientInterface;\n@@ -18,19 +17,28 @@\n     }\n \n     public function fetchData(string $table, array $filters = [])\n     {\n-        // Construire l'URL de la requête vers Supabase avec les filtres\n+        // Construire l'URL de la requête vers Supabase\n         $url = \"{$this->url}/rest/v1/{$table}\";\n \n-        // Si des filtres sont fournis, les ajouter à l'URL sous forme de query params\n+        // Vérifier s'il y a des filtres à appliquer\n         if (!empty($filters)) {\n-            // Utilisation de http_build_query pour formater les paramètres de manière correcte\n-            $queryString = http_build_query($filters);\n-            $url .= \"?{$queryString}\";\n+            $queryParams = [];\n+\n+            foreach ($filters as $key => $value) {\n+                if (!empty($value)) { // Évite d'ajouter des filtres vides\n+                    $queryParams[] = \"{$key}=eq.{$value}\";\n+                }\n+            }\n+\n+            // Ajouter les filtres à l'URL\n+            if (!empty($queryParams)) {\n+                $url .= '?' . implode('&', $queryParams);\n+            }\n         }\n \n-        // Envoi de la requête à Supabase\n+        // Envoi de la requête\n         $response = $this->client->request('GET', $url, [\n             'headers' => [\n                 'apikey' => $this->key,\n                 'Authorization' => 'Bearer ' . $this->key,\n"
+                },
+                {
+                    "date": 1738161114983,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,5 @@\n+<?php\n // src/Service/SupabaseService.php\n namespace App\\Service;\n \n use Symfony\\Contracts\\HttpClient\\HttpClientInterface;\n"
                 }
             ],
             "date": 1738148473214,
